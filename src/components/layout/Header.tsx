@@ -41,10 +41,6 @@ export function Header() {
   const { content, filename, hasDocument, mode, setMode, closeDocument } =
     useDocument()
 
-  if (!hasDocument) {
-    return null
-  }
-
   const isEditor = mode === "editor"
 
   return (
@@ -56,12 +52,19 @@ export function Header() {
         >
           MARKY
         </Link>
-        <Separator orientation="vertical" className="h-4" />
-        <span className="min-w-0 truncate text-sm text-muted-foreground" title={filename}>
-          {filename}
-        </span>
+        {hasDocument ? (
+          <>
+            <Separator orientation="vertical" className="h-4" />
+            <span className="min-w-0 truncate text-sm text-muted-foreground" title={filename}>
+              {filename}
+            </span>
+          </>
+        ) : null}
         <div className="ml-auto flex items-center gap-1">
-          {isEditor ? (
+          {!hasDocument ? (
+            <ThemeToggle />
+          ) : null}
+          {hasDocument && isEditor ? (
             <>
               <ThemeToggle />
               <Button
@@ -83,7 +86,7 @@ export function Header() {
                 <TooltipContent>Close editor</TooltipContent>
               </Tooltip>
             </>
-          ) : (
+          ) : hasDocument ? (
             <>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -120,7 +123,7 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
-          )}
+          ) : null}
         </div>
       </div>
     </header>
