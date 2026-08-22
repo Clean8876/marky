@@ -1,3 +1,5 @@
+const MARKDOWN_EXTENSIONS = [".md", ".markdown"]
+
 export function isMarkdownFile(file: File) {
   const name = file.name.toLowerCase()
   return (
@@ -6,6 +8,16 @@ export function isMarkdownFile(file: File) {
     file.type === "text/markdown" ||
     file.type === "text/plain"
   )
+}
+
+export function normalizeFilename(input: string) {
+  const cleaned = input.replace(/[\\/:*?"<>|]/g, "").trim()
+  const extension = MARKDOWN_EXTENSIONS.find((value) =>
+    cleaned.toLowerCase().endsWith(value),
+  )
+  const base = (extension ? cleaned.slice(0, -extension.length) : cleaned).trim()
+  if (!base) return "untitled.md"
+  return `${base}${extension ?? ".md"}`
 }
 
 export function readFileAsText(file: File) {
@@ -28,7 +40,7 @@ export function downloadMarkdown(filename: string, content: string) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement("a")
   link.href = url
-  link.download = filename.endsWith(".md") ? filename : `${filename}.md`
+  link.download = normalizeFilename(filename)
   document.body.appendChild(link)
   link.click()
   link.remove()
